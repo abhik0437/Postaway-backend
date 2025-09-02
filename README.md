@@ -22,20 +22,11 @@ Image upload support (multipart/form-data)
 📦 Installation
 # Clone the repository
 git clone https://github.com/your-username/postaway-backend.git
+
 cd postaway-backend
 
 # Install dependencies
 npm install
-
-# Create an .env file for environment variables
-touch .env
-
-
-Add required environment variables (example):
-
-PORT=3200
-MONGO_URI=your-mongodb-uri
-JWT_SECRET=your-secret-key
 
 
 Start the server:
@@ -57,6 +48,7 @@ Authorization: Bearer <your_token_here>
 Tokens are returned upon successful login.
 
 📖 API Endpoints
+
 👤 User Routes
 
 POST /api/user/signup → Register a new user
@@ -119,6 +111,3 @@ JWT Authentication
 
 Multer (file uploads)
 
-📜 License
-
-This project is licensed under the MIT License.
