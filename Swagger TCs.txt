@@ -1,2 +1,0 @@
-1. Login user with valid credentials - receive json web token
-2. login user with invalid credentials - error
