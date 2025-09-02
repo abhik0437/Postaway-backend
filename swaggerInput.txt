@@ -1,0 +1,18 @@
+Login:
+
+{
+"name" : "abhi",
+"email" : "abhik@gmail.com",
+"password":"abhi9999"
+}
+
+{
+"email": "abhik@gmail.com",
+"password": "abhi9999"
+
+}
+
+{
+"
+
+}

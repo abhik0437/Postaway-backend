@@ -1,0 +1,1313 @@
+{
+   "openapi": "3.1.0",
+   "info":{
+    "title": "Postaway App",
+    "version": "1.0.0"
+   },
+   "servers":[{
+    "url": "http://localhost:3200",
+    "description": "Dev server"
+
+   }],
+   "components": {
+    "securitySchemes": {
+        "bearerAuth":{
+            "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+
+        }
+        
+    }
+   },
+   "paths":{
+    "/api/user/signup":{
+        "post":{
+            "tags": ["User"],
+            "description": "Sign up the user in application",
+            "operationId": "signupUser",
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name" : {
+                                    "type" : "string"
+
+                                },
+                                "email":{
+                                    "type": "string"
+                                },
+                                "password":{
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["name", "email", "password"]
+                        }
+                    }
+                }
+
+            },
+            "responses":{
+                "201":{
+                    "description": "User details used to sign up",
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "type": "object",
+                                "properties":{
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "bookmarks": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    },
+    "/api/user/signin":{
+        "post":{
+            "tags": ["User"],
+            "description": "Logs in the user in application",
+            "operationId": "signinUser",
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email":{
+                                    "type": "string"
+                                },
+                                "password":{
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["email", "password"]
+                        }
+                    }
+                }
+
+            },
+            "responses":{
+                "200":{
+                    "description": "Successful login - returns JWT token",
+                    "content": {
+                        "text/plain":{
+                            "schema":{
+                                "type": "string",
+                                "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmOGJlMWQ3ZS00YmJkLTRlZmMtODc2ZS1lZDc1YzRhYmIwZmIiLCJlbWFpbCI6ImFiaGlrQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ0ODY5NCwiZXhwIjoxNzUxNDUyMjk0fQ.oTbxsUXF2-NAY3yVcQPgVC2SYfDWWWytSvdPtAc1Jcc"
+                            }
+                        }
+                    }
+
+                },
+
+                "400":{
+                    "description": "Login failure due to incorrect credentials",
+                    "content":{
+                        "text/plain":{
+                            "schema":{
+                                "type": "string",
+                                "example": "Incorrect credentials, please try again"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/user/all": {
+
+        "get": {
+            "summary": "get all signed up users",
+            "tags": ["User"],
+            "operationId": "getAllUsers",
+            "responses": {
+                "200": {
+                    "description": "array of all signed up users",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "bookmarks": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    },
+    "/api/posts/new": {
+        "post":{
+            "tags": ["Post"],
+            "summary": "create new post",
+            "operationId": "newPost",
+            "security": [
+                {
+                    "bearerAuth": []
+
+                }
+                
+            ],
+            "parameters": [
+                {
+                    "name": "status",
+                    "in": "query",
+                    
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "enum" : ["draft", "published"],
+                        "default": "published"
+                    },
+                    "description": "optional status for post"
+                }
+            ],
+            "requestBody":{
+                "required": true,
+                "content":{
+                    "multipart/form-data": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "caption": {
+                                    "type": "string",
+                                    "description": "caption of the post"
+                                },
+                                "image":{
+                                    "type": "string",
+                                    "format":"binary",
+                                    "description": "image file upload"
+                                }
+                            },
+
+                            "required": ["caption", "image"]
+
+                        }
+                    }
+                }
+            },
+
+            "responses": {
+                "201": {
+                    "description": "New post successfully created",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type":"string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive":{
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+
+                "401": {
+                    "description": "Unauthorized to create post",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type" : "string",
+                                "example": "unauthorized"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/posts/new/{postId}": {
+        "post": {
+            "tags": ["Post"],
+            "description": "edit post draft",
+            "operationId": "newPostEdit",
+            "security": [
+                {
+                    "bearerAuth":[]
+                }
+            ],
+            "parameters":[
+                {
+                    "name": "status",
+                    "in": "query",
+                    
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "enum" : ["draft", "published"],
+                        "default": "published"
+                    },
+                    "description": "optional status for post"
+                },{
+                    "name": "postId",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    },
+                    "description": "The Id of post saved as draft"
+
+                }
+            ],
+            "requestBody": {
+                "required" : true,
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "caption": {
+                                    "type": "string",
+                                    "description": "caption of the post"
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "format": "binary",
+                                    "description": "Image to upload"
+                                }
+                            }
+
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201" : {
+                    "description": "Created/Edited new post",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "unauthorized user",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string",
+                                "example": "Unauthorized"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/posts/all": {
+        "get": {
+            "tags": ["Post"],
+            "description": "returns all posts by all users",
+            "operationId": "allPosts",
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "responses":{
+                "200": {
+                    "description": "all posts by all users",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                "properties": {
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive": {
+                                        "type": "boolean"
+                                    }
+                                }
+                                }
+                            }
+                        }
+                    }
+                       },
+
+                       "401": {
+                    "description": "unauthorized user",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string",
+                                "example": "Unauthorized"
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    },
+
+    "/api/posts/myposts" : {
+        "get": {
+            "summary": "return all posts of specific user",
+            "operationId": "myposts",
+            "tags": ["Post"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "responses": {
+                "200": {
+                    "description": "all posts by user",
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "array",
+                            "items":{
+                                "type": "object",
+                                "properties": {
+                                    
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive": {
+                                        "type": "boolean"
+                                    }
+                                
+
+                                }
+                                
+                            }
+                            }
+                        }
+                    }
+                                    
+                }
+            }
+
+        }
+    },
+    "/api/posts/post/{postId}": {
+        "get": {
+            "summary": "gets a single post",
+            "operationId": "getSinglePost",
+            "tags": ["Post"],
+            "security": [
+
+                {
+                    "bearerAuth": []
+                }
+
+            ],
+
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+
+                }
+            ],
+
+            "responses": {
+                "200": {
+                    "description": "returns post with given Id, if found",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive": {
+                                        "type": "boolean"
+                                    }
+                                
+
+                                }
+
+                            }
+                        }
+                    }
+                },
+
+                "400": {
+                    "description": "no post found",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "post": {
+            "summary": "update post",
+            "operationId": "updateSinglePost",
+            "tags": ["Post"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "requestBody": {
+                "required": true,
+                "content" :{
+                    "multipart/form-data": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "caption": {
+                                    "type": "string"
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                }
+
+            },
+
+            "responses": {
+                "201": {
+                    "description": "post updated successfully",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "no post found to update",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/posts/archive/{postId}": {
+        "post": {
+            "summary": "archive a post",
+            "operationId": "archivePost",
+            "tags": ["Post"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "201": {
+                    "description": "post archived/unarchived successfully",
+                    "content": {
+                        "text/plain": {
+                            "schema" : {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+
+                "400": {
+                    "description": "no post found",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/posts/post/bookmark/{postId}": {
+        "post": {
+            "summary": "bookmark a post",
+            "operationId": "bookmarkPost",
+            "tags": ["Post"],
+            "security": [
+
+                {
+                    "bearerAuth": []
+                }
+        
+            ],
+
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "201": {
+                    "description": "post bookmarked/un bookmarked successfully",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/posts/post/delete/{postId}": {
+        "delete": {
+            "summary": "Delete a post",
+            "operationId": "deletePost",
+            "tags": ["Post"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "201": {
+                    "description": "post deleted successfully",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+
+                "400": {
+                    "description": "no post found with given id",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/posts/next": {
+        "get": {
+            "summary": "get next posts",
+            "operationId": "getNextPosts",
+            "tags": ["Post"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "responses": {
+                "200": {
+                    "description": "next 5 posts",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                "properties": {
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive": {
+                                        "type": "boolean"
+                                    }
+                                }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/posts/prev": {
+        "get": {
+            "summary": "get 5 previous posts",
+            "operationId": "getPrevPosts",
+            "tags": ["Post"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "responses":{
+                "200": {
+                    "description": "previous 5 posts",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type":"array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "caption": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "imageUrl": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "isArchive": {
+                                        "type": "boolean"
+                                    }
+                                }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/likes/like/{postId}": {
+        "post": {
+            "summary": "like a post",
+            "tags": ["Like"],
+            "operationId": "likePost",
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "201": {
+                    "description": "post liked successfully",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "postId": {
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "type": "string"
+                                    }
+
+                                }
+                            }                        
+                        }
+
+                    }
+                },
+
+                "400": {
+                    "description": "like failed",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+
+        },
+        
+        "get": {
+            "summary": "get all likes made to a specific post",
+            "operationId": "getAllLikes",
+            "tags": ["Like"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "parameters" : [
+                {
+                    "in": "path",
+                    "required": true,
+                    "name": "postId",
+                    "schema" :{
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "200": {
+                    "description": "array of likes made on post",
+                    "content": {
+                        "application/json" : {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "postId": {
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "type": "string"
+                                    }
+
+                                }
+                                }
+                            }
+                        }
+                    }
+                },
+
+                "400": {
+                    "description": "no likes made on given post",
+                    "content": {
+                        "text/plain" : {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/likes/like/{likeId}": {
+        "delete": {
+            "summary": "unlike a post",
+            "operationId": "unlikePost",
+            "tags": ["Like"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "parameters": [
+
+                {
+                    "in": "path",
+                    "required": true,
+                    "name": "likeId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "200": {
+                    "description": "like removed successfully",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+
+                "400": {
+                    "description": "post hasn't been liked yet",
+                    "content" : {
+                        "text/plain" : {
+                            "schema" : {
+                                "type" : "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/comments/{postId}/new": {
+        "post": {
+            "summary": "Add a new comment",
+            "operationId": "addComment",
+            "tags": ["Comment"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "required": true
+                }
+            ],
+
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded" : {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "content": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "responses": {
+                "201": {
+                    "description": "comment added successfully to post",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "postId": {
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "/api/comments/{postId}/all": {
+        "get": {
+            "summary": "get all comments on a given post",
+            "operationId": "getComments",
+            "tags": ["Comment"],
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "postId",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+
+            "responses": {
+                "200": {
+                    "description": "array of all comments",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "postId": {
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    
+                                    }
+                                }
+                            }
+                        
+                        }
+                    }
+                }
+            },
+            "400": {
+                "description": "no comments made on the post",
+                "content": {
+                    "text/plain": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+   },
+   
+   "/api/comments/{postId}/{commentId}": {
+    "post": {
+        "summary": "update comment on a post",
+        "operationId":"updateComment",
+        "tags": ["Comment"],
+        "security": [
+            {
+                "bearerAuth": []
+            }
+        ],
+        "parameters": [
+            {
+                "in": "path",
+                "required": true,
+                "name": "postId",
+                "schema": {
+                    "type": "string"
+                }
+            },
+
+            {
+                "in": "path",
+                "required": true,
+                "name": "commentId",
+                "schema": {
+                    "type": "string"
+                }
+            }
+        ],
+
+        "requestBody": {
+            "required": true,
+            "content": {
+                "application/x-www-form-urlencoded": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "content": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }        
+        },
+
+        "responses": {
+            "201": {
+                "description": "comment updated successfully",
+                "content" :{
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "type": "string"
+                                    },
+                                    "postId": {
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    
+                                    }
+                                }
+                        }
+                    }
+                }
+            },
+
+            "400": {
+                "description": "no comment found to update",
+                "content": {
+                    "text/plain": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "delete": {
+        "summary": "delete a comment",
+        "operationId": "deleteComment",
+        "tags": ["Comment"],
+        "security": [
+            {
+                "bearerAuth": []
+            }
+        ],
+
+        "parameters": [
+            {
+                "in": "path",
+                "name": "postId",
+                "schema": {
+                    "type": "string"
+                }
+            },
+
+            {
+                "in": "path",
+                "name": "commentId",
+                "schema": {
+                    "type": "string"
+                }
+            }
+        ],
+
+        "responses": {
+            "201": {
+                "description": "comment deleted successfully",
+                "content": {
+                    "text/plain": {
+                        "schema": {
+                            "type":"string"
+                        }
+                    }
+                }
+            },
+
+            "400": {
+                "description": "no comment found to delete",
+                "content": {
+                    "text/plain": {
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+   }
+}
+
+}
